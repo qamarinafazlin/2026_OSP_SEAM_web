@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Sell a snack{% endblock %}
+
+{% block section %}
+<header class="page-head">
+    <h1>Sell a snack</h1>
+    <p>
+        List something from home.
+        Buyers will contact you to arrange pickup.
+    </p>
+</header>
+
+<div class="form-with-preview">
+    <form action="/reg_items" method="post" enctype="multipart/form-data" class="form-card">
+        <div class="form-grid">
+            <div class="field">
+                <label for="seller">Seller ID</label>
+                <input type="text" id="seller" value="{{ session.get('id', '') }}" readonly>
+                <small class="hint">Filled in from your account.</small>
+            </div>
+
+            <div class="field">
+                <label for="name">Product name <span class="req">*</span></label>
+                <input type="text" id="name" name="name" placeholder="e.g. Super Ring" maxlength="100" required>
+            </div>
+
+            <div class="field">
+                <label for="price">Price ₩ <span class="req">*</span></label>
+                <input type="number" id="price" name="price" placeholder="2500" min="1" step="1" required>
+            </div>
+
+            <div class="field">
+                <label for="country">Country <span class="req">*</span></label>
+                <select id="country" name="country" required>
+                    <option value="Malaysia">Malaysia</option>
+                    <option value="Mongolia">Mongolia</option>
+                    <option value="Myanmar">Myanmar</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="pickup">
+                Address (pickup location) <span class="req">*</span>
+            </label>
+            <input type="text" id="pickup" name="pickup" placeholder="e.g. Pick up at ECC B4" maxlength="200" required>
+        </div>
+
+        <fieldset class="field">
+            <legend>Status</legend>
+
+            <div class="radio-chips">
+                <input type="radio" id="on-sale" name="status" value="On sale" checked>
+                <label for="on-sale">On sale</label>
+
+                <input type="radio" id="reserved" name="status" value="Reserved">
+                <label for="reserved">Reserved</label>
+
+                <input type="radio" id="sold-out" name="status" value="Sold out">
+                <label for="sold-out">Sold out</label>
+            </div>
+        </fieldset>
+
+        <div class="field">
+            <label for="description">
+                Description <span class="req">*</span>
+            </label>
+            <textarea id="description" name="description" placeholder="What is it? How does it taste?" maxlength="2000"
+                required></textarea>
+        </div>
+
+        <div class="field">
+            <label for="image">Picture <span class="req">*</span></label>
+            <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp"
+                aria-describedby="image-help" required>
+            <small id="image-help" class="hint">
+                Upload a JPG, PNG, or WebP image.
+            </small>
+        </div>
+
+        <div class="actions actions-end">
+            <a href="/" class="btn btn-ghost">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                Register product
+            </button>
+        </div>
+    </form>
+
+    <aside class="preview" aria-labelledby="preview-heading">
+        <h2 id="preview-heading" class="side-label">
+            PREVIEW IN THE LIST
+        </h2>
+
+        <div id="preview-card" class="card product-card country-malaysia">
+            <div class="photo">
+                <img id="preview-image" alt="Selected snack" hidden>
+                <span id="preview-placeholder" class="photo-empty">
+                    Upload image
+                </span>
+            </div>
+
+            <div class="product-info">
+                <div class="badges">
+                    <span id="preview-country" class="country-pill">
+                        Malaysia
+                    </span>
+                    <span id="preview-status" class="status-pill">
+                        On sale
+                    </span>
+                </div>
+
+                <span id="preview-name" class="product-name">Snack name</span>
+                <span id="preview-price" class="product-price">₩—</span>
+            </div>
+        </div>
+    </aside>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const nameInput = document.getElementById("name");
+    const priceInput = document.getElementById("price");
+    const countryInput = document.getElementById("country");
+    const imageInput = document.getElementById("image");
+    const statusInputs = document.getElementsByName("status");
+
+    function updatePreview() {
+        document.getElementById("preview-name").textContent =
+            nameInput.value.trim() || "Snack name";
+
+        document.getElementById("preview-price").textContent =
+            priceInput.value ? "₩" + priceInput.value : "₩—";
+
+        document.getElementById("preview-country").textContent =
+            countryInput.value;
+
+        document.getElementById("preview-card").className =
+            "card product-card country-" + countryInput.value.toLowerCase();
+
+        for (let i = 0; i < statusInputs.length; i++) {
+            if (statusInputs[i].checked) {
+                document.getElementById("preview-status").textContent =
+                    statusInputs[i].value;
+            }
+        }
+    }
+
+    nameInput.addEventListener("input", updatePreview);
+    priceInput.addEventListener("input", updatePreview);
+    countryInput.addEventListener("change", updatePreview);
+
+    for (let i = 0; i < statusInputs.length; i++) {
+        statusInputs[i].addEventListener("change", updatePreview);
+    }
+
+    let imageUrl;
+
+    imageInput.addEventListener("change", function () {
+        const preview = document.getElementById("preview-image");
+        const placeholder = document.getElementById("preview-placeholder");
+
+        if (imageUrl) {
+            URL.revokeObjectURL(imageUrl);
+            imageUrl = undefined;
+        }
+
+        preview.hidden = true;
+        preview.removeAttribute("src");
+        placeholder.hidden = false;
+        imageInput.setCustomValidity("");
+
+        const file = imageInput.files[0];
+        if (!file) return;
+
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+        if (!allowedTypes.includes(file.type)) {
+            imageInput.setCustomValidity("Choose a JPG, PNG, or WebP image.");
+            imageInput.reportValidity();
+            return;
+        }
+
+        imageUrl = URL.createObjectURL(file);
+        preview.src = imageUrl;
+        preview.hidden = false;
+        placeholder.hidden = true;
+    });
+</script>
+{% endblock %}
