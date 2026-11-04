@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block section %}
+<a href="/" class="back-link">← Back to all snacks</a>
+
+<article class="detail country-{{ product.country | lower }}">
+    <div class="detail-photo">
+        <div class="photo">
+            {% if product.image_url %}
+            <img id="main-photo" src="{{ product.image_url }}" alt="{{ product.name }}">
+            {% else %}
+            <span class="photo-empty">No image available</span>
+            {% endif %}
+        </div>
+
+        {% if product.image_url %}
+        <div class="chips" aria-label="Product images">
+            <button type="button" class="chip" data-image="{{ product.image_url }}">Main photo</button>
+
+            {% for image_url in product.extra_images | default([]) %}
+            <button type="button" class="chip" data-image="{{ image_url }}">Photo {{ loop.index + 1 }}</button>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="detail-info">
+        <div class="badges">
+            <span class="country-pill">{{ product.country }}</span>
+            <span class="status-pill">{{ product.status }}</span>
+        </div>
+
+        <h1>{{ product.name }}</h1>
+
+        <div class="price-row">
+            <span class="price-big">
+                ₩{{ "{:,}".format(product.price) }}
+            </span>
+
+            {% if product.rating is defined and product.rating is not none %}
+            <span class="muted">
+                ★ {{ product.rating }} · {{ reviews | length }} reviews
+            </span>
+            {% else %}
+            <span class="muted">{{ reviews | length }} reviews</span>
+            {% endif %}
+        </div>
+
+        <dl class="facts">
+            <dt>Seller</dt>
+            <dd>{{ product.seller }}</dd>
+
+            <dt>Pickup</dt>
+            <dd>{{ product.pickup }}</dd>
+
+            <dt>Listed</dt>
+            <dd>{{ product.listed_date }}</dd>
+        </dl>
+
+        <section class="description" aria-labelledby="description-heading">
+            <h2 id="description-heading">Description</h2>
+            <p>{{ product.description }}</p>
+        </section>
+
+        <div class="actions">
+            <button type="button" class="btn btn-primary" disabled>
+                Contact seller
+            </button>
+
+            <a href="{{ '/reg_review' if session.get('id') else '/login' }}" class="btn btn-ghost">
+                Write a review
+            </a>
+        </div>
+
+        <p class="hint">
+            Seller contact and purchase functions are awaiting backend integration.
+        </p>
+
+        <button type="button" class="btn btn-ghost" disabled>
+            Purchase
+        </button>
+    </div>
+</article>
+
+<section aria-labelledby="reviews-heading">
+    <h2 id="reviews-heading">Reviews for this snack</h2>
+
+    <div class="review-grid">
+        {% for review in reviews %}
+        <a href="/review_detail/{{ review.id }}" class="card review-card">
+            <span class="stars" aria-label="{{ review.rating }} out of 5 stars">
+                {% for star in range(review.rating) %}★{% endfor %}
+            </span>
+
+            <span class="review-title">{{ review.title }}</span>
+
+            <span class="review-meta">
+                By {{ review.author }} · {{ review.date }}
+            </span>
+        </a>
+        {% else %}
+        <p class="muted">No reviews yet. Share your first impression!</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const mainPhoto = document.getElementById("main-photo");
+    const imageButtons = document.querySelectorAll("[data-image]");
+
+    imageButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            if (mainPhoto) {
+                mainPhoto.src = button.getAttribute("data-image");
+            }
+        });
+    });
+</script>
+{% endblock %}
