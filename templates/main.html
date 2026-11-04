@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Products{% endblock %}
+
+{% block section %}
+<section class="hero" aria-labelledby="main-heading">
+    <div class="hero-text">
+        <div class="hero-countries">
+            MALAYSIA · MONGOLIA · MYANMAR
+        </div>
+
+        <h1 id="main-heading">
+            Taste home, from<br>
+            벗s on school campus.
+        </h1>
+
+        <p>
+            Snacks listed by international students at Ewha.
+            Pick up in person around campus and make friends!
+        </p>
+    </div>
+
+    <a href="{{ '/reg_items' if session.get('id') else '/login' }}" class="btn btn-accent">
+        + Sell a snack
+    </a>
+</section>
+
+<nav class="chips" aria-label="Filter products by country">
+    <button type="button" class="chip chip-on" data-country="All" aria-pressed="true">All</button>
+
+    <button type="button" class="chip" data-country="Malaysia" aria-pressed="false">Malaysia</button>
+
+    <button type="button" class="chip" data-country="Mongolia" aria-pressed="false">Mongolia</button>
+
+    <button type="button" class="chip" data-country="Myanmar" aria-pressed="false">Myanmar</button>
+</nav>
+
+<section aria-label="Available snacks">
+    <div class="product-grid">
+        {% for product in products %}
+        <a href="/view_detail/{{ product.id }}" class="card product-card country-{{ product.country | lower }}"
+            data-product-country="{{ product.country }}">
+            <div class="photo">
+                {% if product.image_url %}
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
+                {% else %}
+                <span class="photo-empty">No image available</span>
+                {% endif %}
+
+                {% if product.status == 'Reserved' %}
+                <span class="st st-res">Reserved</span>
+                {% elif product.status == 'Sold out' %}
+                <span class="st st-sold">Sold out</span>
+                {% else %}
+                <span class="st st-sale">On sale</span>
+                {% endif %}
+            </div>
+
+            <div class="product-info">
+                <span class="country-pill">{{ product.country }}</span>
+                <span class="product-name">{{ product.name }}</span>
+                <span class="product-price">
+                    ₩{{ "{:,}".format(product.price) }}
+                </span>
+            </div>
+        </a>
+        {% else %}
+        <div class="empty">
+            <h2>No snacks listed yet</h2>
+            <p>Be the first to share a taste of home.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <p id="filter-message" class="muted" role="status"></p>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const countryButtons = document.querySelectorAll(".chips button");
+    const productCards = document.querySelectorAll("[data-product-country]");
+    const filterMessage = document.getElementById("filter-message");
+
+    countryButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            const country = button.getAttribute("data-country");
+            let visibleCount = 0;
+
+            countryButtons.forEach(function (otherButton) {
+                const selected = otherButton === button;
+                otherButton.className = selected ? "chip chip-on" : "chip";
+                otherButton.setAttribute("aria-pressed", String(selected));
+            });
+
+            productCards.forEach(function (card) {
+                const matches =
+                    country === "All" ||
+                    card.getAttribute("data-product-country") === country;
+
+                card.style.display = matches ? "" : "none";
+
+                if (matches) {
+                    visibleCount++;
+                }
+            });
+
+            filterMessage.textContent =
+                visibleCount === 0 ? "No snacks available in this selection." : "";
+        });
+    });
+</script>
+{% endblock %}
