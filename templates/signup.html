@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Sign up{% endblock %}
+
+{% block page_class %}page-auth{% endblock %}
+
+{% block section %}
+<header class="page-head">
+    <h1>Create your own account</h1>
+    <p>Buy, sell and review snacks with other Ewha students.</p>
+</header>
+
+<form action="/signup" method="post" class="form-card auth-card">
+    <div class="field">
+        <label for="signup-id">ID <span class="req">*</span></label>
+
+        <div class="input-with-btn">
+            <input type="text" id="signup-id" name="id" placeholder="4–20 numbers or letters"
+                pattern="[A-Za-z0-9]{4,20}" minlength="4" maxlength="20" autocomplete="username"
+                aria-describedby="id-help" required>
+            <button type="button" class="btn btn-ghost" disabled>
+                Check ID
+            </button>
+        </div>
+
+        <small id="id-help" class="hint">
+            ID availability checking will be connected to the server.
+        </small>
+    </div>
+
+    <div class="field">
+        <label for="password">
+            Password <span class="req">*</span>
+        </label>
+        <input type="password" id="password" name="password" placeholder="At least 8 characters" minlength="8"
+            autocomplete="new-password" required>
+    </div>
+
+    <div class="field">
+        <label for="confirm-password">
+            Confirm password <span class="req">*</span>
+        </label>
+        <input type="password" id="confirm-password" name="confirm_password" minlength="8" autocomplete="new-password"
+            required>
+    </div>
+
+    <div class="field">
+        <label for="email">Email <span class="req">*</span></label>
+        <input type="email" id="email" name="email" placeholder="you@ewha.ac.kr" autocomplete="email" required>
+    </div>
+
+    <div class="field">
+        <label for="phone">Phone number</label>
+        <input type="text" id="phone" name="phone" placeholder="010-2345-6789" inputmode="tel" autocomplete="tel">
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Create account
+    </button>
+</form>
+
+<p class="auth-switch">
+    Already have an account? <a href="/login">Sign in</a>
+</p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const password = document.getElementById("password");
+    const confirmation = document.getElementById("confirm-password");
+
+    function checkPasswords() {
+        if (password.value !== confirmation.value) {
+            confirmation.setCustomValidity("Passwords do not match.");
+        } else {
+            confirmation.setCustomValidity("");
+        }
+    }
+
+    password.addEventListener("input", checkPasswords);
+    confirmation.addEventListener("input", checkPasswords);
+</script>
+{% endblock %}
