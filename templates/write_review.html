@@ -1,0 +1,354 @@
+
+{% extends "base.html" %}
+
+{% block title %}Write a review{% endblock %}
+
+{% block section %}
+
+<style>
+.write-review-page {
+    width: 100%;
+    max-width: 720px;
+    margin: -15px auto 0;
+}
+
+.write-review-heading {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.write-review-heading h1 {
+    font-size: 26px;
+    margin: 0 0 4px;
+    font-weight: 800;
+}
+
+.write-review-heading p {
+    margin: 0;
+    color: #666;
+    font-size: 15px;
+}
+
+.write-review-form {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.write-review-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.write-review-field {
+    margin-bottom: 20px;
+}
+
+.write-review-field label,
+.write-review-label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.write-review-field input,
+.write-review-field textarea {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d6d6d6;
+    border-radius: 10px;
+    padding: 12px;
+    font: inherit;
+    font-size: 13px;
+    background: #fff;
+}
+
+.write-review-field textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.write-review-hint {
+    display: block;
+    margin-top: 5px;
+    color: #777;
+    font-size: 10px;
+}
+
+.write-review-rating {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 8px 0 25px;
+}
+
+.write-review-stars {
+    display: flex;
+    gap: 2px;
+}
+
+.write-review-stars button {
+    border: 0;
+    background: transparent;
+    color: #d5d5d5;
+    font-size: 29px;
+    padding: 0;
+    cursor: pointer;
+}
+
+.write-review-stars button.selected {
+    color: #B5964C;
+}
+
+.write-review-rating-text {
+    font-size: 12px;
+    color: #333;
+}
+
+.write-review-upload {
+    border: 1px dashed #d5d5d5;
+    border-radius: 10px;
+    min-height: 95px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #888;
+    font-size: 12px;
+    overflow: hidden;
+}
+
+.write-review-upload img {
+    max-width: 100%;
+    max-height: 160px;
+    object-fit: contain;
+}
+
+.write-review-counter {
+    text-align: right;
+    font-size: 10px;
+    color: #888;
+    margin-top: 4px;
+}
+
+.write-review-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+    .write-review-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .write-review-rating {
+        flex-wrap: wrap;
+    }
+}
+</style>
+
+<div class="write-review-page">
+
+    <header class="write-review-heading">
+        <h1>Write a review</h1>
+        <p>Tried something new? Help the next person decide.</p>
+    </header>
+
+    <form class="write-review-form"
+          action="/reg_review"
+          method="POST"
+          enctype="multipart/form-data">
+
+        <div class="write-review-grid">
+
+            <div class="write-review-field">
+                <label for="reviewer_id">Reviewer ID</label>
+                <input
+                    type="text"
+                    id="reviewer_id"
+                    name="reviewer_id"
+                    value="{{ session.get('id', '') }}"
+                    placeholder="Ewha kim"
+                    readonly
+                >
+                <small class="write-review-hint">
+                    Filled in from your account.
+                </small>
+            </div>
+
+            <div class="write-review-field">
+                <label for="product_name">Product name</label>
+                <input
+                    type="text"
+                    id="product_name"
+                    name="product_name"
+                    placeholder="e.g Super ring"
+                    required
+                >
+            </div>
+
+        </div>
+
+        <div class="write-review-field">
+            <span class="write-review-label">Rating</span>
+
+            <div class="write-review-rating">
+
+                <div class="write-review-stars" id="rating-stars">
+                    <button type="button" data-rating="1">★</button>
+                    <button type="button" data-rating="2">★</button>
+                    <button type="button" data-rating="3">★</button>
+                    <button type="button" data-rating="4">★</button>
+                    <button type="button" data-rating="5">★</button>
+                </div>
+
+                <span class="write-review-rating-text"
+                      id="rating-text">4/5 Really liked it</span>
+
+            </div>
+
+            <input type="hidden" name="rating" id="rating-value" value="4">
+        </div>
+
+        <div class="write-review-field">
+            <label for="title">Review Title</label>
+            <input
+                type="text"
+                id="title"
+                name="title"
+                placeholder="Sum it up in one line"
+                maxlength="100"
+                required
+            >
+        </div>
+
+        <div class="write-review-field">
+            <label for="content">Review</label>
+            <textarea
+                id="content"
+                name="content"
+                maxlength="1000"
+                placeholder="Taste, texture, price, how the pick up went..."
+                required
+            ></textarea>
+
+            <div class="write-review-counter">
+                <span id="review-count">0</span> / 1000
+            </div>
+        </div>
+
+        <div class="write-review-field">
+            <label for="review-image">Picture</label>
+
+            <label class="write-review-upload" for="review-image">
+                <span id="upload-placeholder">Upload image</span>
+                <img id="upload-preview" alt="Selected image" hidden>
+            </label>
+
+            <input
+                type="file"
+                id="review-image"
+                name="image"
+                accept="image/jpeg,image/png,image/webp"
+                style="display:none;"
+            >
+        </div>
+
+        <div class="write-review-actions">
+            <a href="/review" class="btn btn-ghost">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                Post a review
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const starButtons = document.querySelectorAll(
+    "#rating-stars button"
+);
+const ratingValue = document.getElementById("rating-value");
+const ratingText = document.getElementById("rating-text");
+
+const ratingLabels = [
+    "",
+    "Didn't like it",
+    "Could be better",
+    "It was okay",
+    "Really liked it",
+    "Loved it"
+];
+
+function setRating(value) {
+    ratingValue.value = value;
+
+    starButtons.forEach(button => {
+        button.classList.toggle(
+            "selected",
+            Number(button.dataset.rating) <= value
+        );
+    });
+
+    ratingText.textContent =
+        value + "/5 " + ratingLabels[value];
+}
+
+starButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        setRating(Number(button.dataset.rating));
+    });
+});
+
+setRating(4);
+
+const reviewContent = document.getElementById("content");
+const reviewCount = document.getElementById("review-count");
+
+reviewContent.addEventListener("input", () => {
+    reviewCount.textContent = reviewContent.value.length;
+});
+
+const imageInput = document.getElementById("review-image");
+const imagePreview = document.getElementById("upload-preview");
+const imagePlaceholder = document.getElementById("upload-placeholder");
+
+let previewUrl;
+
+imageInput.addEventListener("change", () => {
+    const file = imageInput.files[0];
+
+    if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        previewUrl = null;
+    }
+
+    imagePreview.hidden = true;
+    imagePreview.removeAttribute("src");
+    imagePlaceholder.hidden = false;
+
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        alert("Please choose a JPG, PNG, or WebP image.");
+        imageInput.value = "";
+        return;
+    }
+
+    previewUrl = URL.createObjectURL(file);
+    imagePreview.src = previewUrl;
+    imagePreview.hidden = false;
+    imagePlaceholder.hidden = true;
+});
+</script>
+{% endblock %}

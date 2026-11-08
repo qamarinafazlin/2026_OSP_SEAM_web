@@ -1,0 +1,42 @@
+
+{% extends "base.html" %}
+
+{% block title %}Log in{% endblock %}
+
+{% block page_class %}page-auth{% endblock %}
+
+{% block section %}
+
+<div class="page-head" style="text-align: center;">
+    <h1>Welcome back</h1>
+    <p>Log in to sell snacks and write reviews</p>
+</div>
+
+<div class="panel auth-card">
+
+    <form action="/login" method="POST">
+
+        <div class="field">
+            <label for="id">ID <span class="req">*</span></label>
+            <input type="text" id="id" name="id" required>
+        </div>
+
+        <div class="field">
+            <label for="pw">Password <span class="req">*</span></label>
+            <input type="password" id="pw" name="pw" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Log in
+        </button>
+
+    </form>
+
+</div>
+
+<p class="auth-switch">
+    New here?
+    <a href="/signup">Create an account</a>
+</p>
+
+{% endblock section %}

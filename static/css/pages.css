@@ -328,3 +328,56 @@ input[readonly] { background: var(--bg); color: var(--text-muted); }
   .card { transition: none; }
   .card:hover { transform: none; }
 }
+
+/* Fix navbar layout */
+.site-header .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 20px;
+}
+
+.site-header .logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 10px;
+}
+
+.site-header .logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.site-header .logo-name,
+.site-header .logo-tag {
+    display: block;
+    white-space: nowrap;
+}
+
+.site-header .main-nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 8px;
+}
+
+.site-header .main-nav .nav {
+    white-space: nowrap;
+}
+
+.site-header .user-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+@media (max-width: 1050px) {
+    .site-header .header-inner {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
