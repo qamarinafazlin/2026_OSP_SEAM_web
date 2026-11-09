@@ -1,148 +1,9 @@
-
 {% extends "base.html" %}
 
 {% block title %}Review Detail{% endblock %}
 
 {% block section %}
 
-<style>
-.review-detail-page {
-    width: 100%;
-    max-width: 720px;
-    margin: -20px auto 0;
-}
-
-.review-detail-card {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.review-detail-photo {
-    width: 100%;
-    height: 280px;
-    background: #E9C949;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #17211B;
-    font-size: 15px;
-}
-
-.review-detail-photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.review-detail-body {
-    padding: 20px;
-}
-
-.review-detail-stars {
-    color: #B5964C;
-    font-size: 26px;
-    letter-spacing: -2px;
-    margin-bottom: 10px;
-}
-
-.review-detail-title {
-    font-size: 22px;
-    font-weight: 800;
-    margin: 0 0 12px;
-}
-
-.review-detail-author {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    margin-bottom: 14px;
-}
-
-.review-detail-avatar {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: #777B49;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.review-detail-date {
-    color: #777;
-    font-size: 10px;
-}
-
-.review-detail-content {
-    font-size: 13px;
-    line-height: 1.6;
-    white-space: pre-line;
-    margin-bottom: 18px;
-}
-
-.review-detail-product {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 8px 12px;
-}
-
-.review-detail-product-image {
-    width: 42px;
-    height: 42px;
-    border-radius: 9px;
-    background: #E9C949;
-    flex-shrink: 0;
-}
-
-.review-detail-product-info {
-    flex: 1;
-}
-
-.review-detail-product-label {
-    font-size: 10px;
-    color: #777;
-}
-
-.review-detail-product-name {
-    font-size: 12px;
-    margin: 3px 0;
-}
-
-.review-detail-product-price {
-    font-size: 11px;
-    color: #777;
-}
-
-.review-detail-product-link {
-    color: #0B4A2F;
-    font-size: 12px;
-    text-decoration: none;
-}
-
-.review-detail-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    margin-top: 12px;
-}
-
-@media (max-width: 600px) {
-    .review-detail-photo {
-        height: 220px;
-    }
-
-    .review-detail-actions {
-        flex-wrap: wrap;
-    }
-}
-</style>
 
 <div class="review-detail-page">
 
@@ -163,7 +24,7 @@
                     {% if i <= review.rating %}
                         ★
                     {% else %}
-                        <span style="color:#D6D6D6;">★</span>
+                        <span class="star-off">★</span>
                     {% endif %}
                 {% endfor %}
             </div>

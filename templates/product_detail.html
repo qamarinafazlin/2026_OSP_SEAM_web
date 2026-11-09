@@ -9,30 +9,18 @@
   <div class="detail-photo">
     <div class="photo">
       {% if product.image_url %}
-        <img
-          id="main-photo"
-          src="{{ product.image_url }}"
-          alt="{{ product.name }}"
-        >
+        <img id="main-photo" src="{{ product.image_url }}" alt="{{ product.name }}">
       {% else %}
         <span class="photo-empty">No image available</span>
       {% endif %}
     </div>
 
-    {% if product.image_url %}
+    {# Only show photo buttons when there is more than one photo #}
+    {% if product.image_url and product.extra_images %}
       <div class="chips" aria-label="Product images">
-        <button
-          type="button"
-          class="chip"
-          data-image="{{ product.image_url }}"
-        >Main photo</button>
-
-        {% for image_url in product.extra_images | default([]) %}
-          <button
-            type="button"
-            class="chip"
-            data-image="{{ image_url }}"
-          >Photo {{ loop.index + 1 }}</button>
+        <button type="button" class="chip chip-on" data-image="{{ product.image_url }}">Photo 1</button>
+        {% for image_url in product.extra_images %}
+          <button type="button" class="chip" data-image="{{ image_url }}">Photo {{ loop.index + 1 }}</button>
         {% endfor %}
       </div>
     {% endif %}
@@ -41,22 +29,20 @@
   <div class="detail-info">
     <div class="badges">
       <span class="country-pill">{{ product.country }}</span>
-      <span class="status-pill">{{ product.status }}</span>
+      <span class="status-pill">{{ product.status or 'On sale' }}</span>
     </div>
 
     <h1>{{ product.name }}</h1>
 
     <div class="price-row">
-      <span class="price-big">
-        ₩{{ "{:,}".format(product.price) }}
-      </span>
+      <span class="price-big">₩{{ "{:,}".format(product.price | int) }}</span>
 
-      {% if product.rating is defined and product.rating is not none %}
+      {% if reviews %}
         <span class="muted">
-          ★ {{ product.rating }} · {{ reviews | length }} reviews
+          ★ {{ product.rating }} · {{ reviews | length }} review{{ '' if reviews | length == 1 else 's' }}
         </span>
       {% else %}
-        <span class="muted">{{ reviews | length }} reviews</span>
+        <span class="muted">No reviews yet</span>
       {% endif %}
     </div>
 
@@ -67,8 +53,10 @@
       <dt>Pickup</dt>
       <dd>{{ product.pickup }}</dd>
 
-      <dt>Listed</dt>
-      <dd>{{ product.listed_date }}</dd>
+      {% if product.listed_date %}
+        <dt>Listed</dt>
+        <dd>{{ product.listed_date }}</dd>
+      {% endif %}
     </dl>
 
     <section class="description" aria-labelledby="description-heading">
@@ -77,25 +65,18 @@
     </section>
 
     <div class="actions">
-      <button type="button" class="btn btn-primary" disabled>
-        Contact seller
-      </button>
+      {% if product.seller_email %}
+        <a href="mailto:{{ product.seller_email }}?subject={{ product.name | urlencode }}" class="btn btn-primary">
+          Contact seller
+        </a>
+      {% else %}
+        <button type="button" class="btn btn-primary" disabled title="Seller contact will be available soon">
+          Contact seller
+        </button>
+      {% endif %}
 
-      <a
-        href="{{ '/reg_review' if session.get('id') else '/login' }}"
-        class="btn btn-ghost"
-      >
-        Write a review
-      </a>
+      <a href="/reg_review" class="btn btn-ghost">Write a review</a>
     </div>
-
-    <p class="hint">
-      Seller contact and purchase functions are awaiting backend integration.
-    </p>
-
-    <button type="button" class="btn btn-ghost" disabled>
-      Purchase
-    </button>
   </div>
 </article>
 
@@ -104,25 +85,20 @@
 
   <div class="review-grid">
     {% for review in reviews %}
-      <a
-        href="/review_detail/{{ review.id }}"
-        class="card review-card"
-      >
-        <span
-          class="stars"
-          aria-label="{{ review.rating }} out of 5 stars"
-        >
-          {% for star in range(review.rating) %}★{% endfor %}
+      <a href="/review/{{ review.id }}" class="card review-card">
+        <span class="stars" aria-label="{{ review.rating }} out of 5 stars">
+          {%- for i in range(1, 6) -%}{{ '★' if i <= review.rating | int else '☆' }}{%- endfor -%}
         </span>
 
         <span class="review-title">{{ review.title }}</span>
 
-        <span class="review-meta">
-          By {{ review.author }} · {{ review.date }}
-        </span>
+        <span class="review-meta">By {{ review.reviewer_id }} · {{ review.date }}</span>
       </a>
     {% else %}
-      <p class="muted">No reviews yet. Share your first impression!</p>
+      <div class="empty">
+        <p>No reviews yet. Share your first impression!</p>
+        <a href="/reg_review" class="btn btn-primary">Write a review</a>
+      </div>
     {% endfor %}
   </div>
 </section>
@@ -135,9 +111,12 @@
 
   imageButtons.forEach(function (button) {
     button.addEventListener("click", function () {
-      if (mainPhoto) {
-        mainPhoto.src = button.getAttribute("data-image");
-      }
+      if (!mainPhoto) return;
+      mainPhoto.src = button.getAttribute("data-image");
+
+      // highlight the photo button that was clicked
+      imageButtons.forEach(function (b) { b.classList.remove("chip-on"); });
+      button.classList.add("chip-on");
     });
   });
 </script>

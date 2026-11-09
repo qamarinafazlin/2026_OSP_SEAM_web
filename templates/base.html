@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/reviews.css') }}">
 </head>
 <body>
 {% set path = request.path %}
@@ -25,10 +26,8 @@
     <nav class="main-nav" aria-label="Main">
       <a href="/" class="nav {% if path == '/' or path.startswith('/view_detail') %}nav-on{% endif %}">Products</a>
       <a href="/review" class="nav {% if path.startswith('/review') %}nav-on{% endif %}">Reviews</a>
-      {% if session.get('id') %}
       <a href="/reg_items" class="nav {% if path.startswith('/reg_items') %}nav-on{% endif %}">Sell a snack</a>
       <a href="/reg_review" class="nav {% if path.startswith('/reg_review') %}nav-on{% endif %}">Write a review</a>
-      {% endif %}
     </nav>
 
     <div class="user-area">

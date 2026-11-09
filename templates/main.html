@@ -21,13 +21,14 @@
   </div>
 
   <a
-    href="{{ '/reg_items' if session.get('id') else '/login' }}"
+    href="/reg_items"
     class="btn btn-accent"
   >
     + Sell a snack
   </a>
 </section>
 
+<div class="row-between">
 <nav class="chips" aria-label="Filter products by country">
   <button
     type="button"
@@ -57,6 +58,8 @@
     aria-pressed="false"
   >Myanmar</button>
 </nav>
+  <span class="count">{{ products|length }} snack{{ '' if products|length == 1 else 's' }} · page {{ page or 1 }} of {{ total_pages or 1 }}</span>
+</div>
 
 <section aria-label="Available snacks">
   <div class="product-grid">
@@ -101,6 +104,16 @@
       </div>
     {% endfor %}
   </div>
+
+  {% if total_pages and total_pages > 1 %}
+<nav class="pagination" aria-label="Pagination">
+  <a href="/?page={{ page - 1 }}" class="pg {% if page <= 1 %}pg-off{% endif %}">‹</a>
+  {% for n in range(1, total_pages + 1) %}
+  <a href="/?page={{ n }}" class="pg {% if n == page %}pg-on{% endif %}">{{ n }}</a>
+  {% endfor %}
+  <a href="/?page={{ page + 1 }}" class="pg {% if page >= total_pages %}pg-off{% endif %}">›</a>
+</nav>
+{% endif %}
 
   <p id="filter-message" class="muted" role="status"></p>
 </section>
